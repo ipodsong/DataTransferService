@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using DataTransferService.Models.RequestModels;
+using DataTransferService.Services;
+using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 
 namespace DataTransferService.Controllers
 {
@@ -7,17 +10,19 @@ namespace DataTransferService.Controllers
     /// </summary>
     [Route("api/transfer")]
     [ApiController]
-    public class TransferController : ControllerBase
+    public class TransferController(TransferService transferService) : ControllerBase
     {
         /// <summary>
         /// Registers a new data transfer request.
         /// </summary>
+        /// <param name="db2DbRequests"></param>
         /// <returns>An HTTP 200 OK response if successful.</returns>
         [HttpPost]
         [Route("regist")]
-        public async Task<IActionResult> Regist()
+        public async Task<IActionResult> RegistAsync(List<Db2DbRequest> db2DbRequests)
         {
-            // TODO: Implement registration logic for a data transfer request
+            await transferService.RegistDb2DbTransferTaskAsync(db2DbRequests);
+
             return Ok();
         }
     }

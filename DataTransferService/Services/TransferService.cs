@@ -1,4 +1,5 @@
 ﻿using DataTransferService.Loggers;
+using DataTransferService.Models.RequestModels;
 using System.Threading.Channels;
 
 namespace DataTransferService.Services
@@ -8,6 +9,8 @@ namespace DataTransferService.Services
     /// </summary>
     public class TransferService
     {
+        #region Field
+
         // Unbounded channel to queue asynchronous tasks
         private readonly Channel<Func<Task>> channel = Channel.CreateUnbounded<Func<Task>>();
 
@@ -16,6 +19,10 @@ namespace DataTransferService.Services
 
         // Logger for recording task execution details or errors
         private readonly ILogger<TransferService> logger;
+
+        #endregion
+
+        #region Constructor & Destructor
 
         /// <summary>
         /// Initializes the TransferService and starts listening to the task channel.
@@ -35,6 +42,10 @@ namespace DataTransferService.Services
             // Gracefully complete the channel writer to signal shutdown
             channel.Writer.Complete();
         }
+
+        #endregion
+
+        #region Task Queue Handling
 
         /// <summary>
         /// Starts reading from the channel and triggers task execution as they arrive.
@@ -88,5 +99,21 @@ namespace DataTransferService.Services
         {
             await channel.Writer.WriteAsync(func);
         }
+
+        #endregion
+
+        #region Make/Regist Task
+        public async Task RegistDb2DbTransferTaskAsync(List<Db2DbRequest> db2DbRequests)
+        {
+            var db2DbService = new Db2DbTransferProcessService();
+
+            foreach(var db2DbRequest in db2DbRequests)
+            {
+                async Task transferTask() => await db2DbService.TransferProcessAsync(db2DbRequest, logger);
+
+                await AddTaskAsync(transferTask);
+            }
+        }
+        #endregion
     }
 }

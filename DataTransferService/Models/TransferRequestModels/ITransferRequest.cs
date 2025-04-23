@@ -11,10 +11,5 @@
         /// Transmission reference date.
         /// </summary>
         public DateOnly BaseDate { get; set; }
-
-        /// <summary>
-        /// Optional metadata or description for the request
-        /// </summary>
-        public string? Description { get; set; }
     }
 }
