@@ -36,6 +36,10 @@ namespace DataTransferService.Loggers
             MongoUrl mongoUrl = new(connectionString);
             MongoClientSettings mongoSetting = MongoClientSettings.FromUrl(mongoUrl);
 
+            // Set a connection timeout of 1 seconds
+            mongoSetting.ConnectTimeout = TimeSpan.FromSeconds(5);
+            mongoSetting.ServerSelectionTimeout = TimeSpan.FromSeconds(5);
+
             // Add credentials
             MongoCredential credential = MongoCredential.CreateCredential(databaseName, userName, password);
             mongoSetting.Credential = credential;
@@ -43,6 +47,17 @@ namespace DataTransferService.Loggers
             // Initialize MongoDB client and database
             MongoClient connection = new(mongoSetting);
             IMongoDatabase database = connection.GetDatabase(databaseName);
+
+            // Test connection (Ping command)
+            try
+            {
+                var pingCommand = new BsonDocument("ping", 1);
+                database.RunCommand<BsonDocument>(pingCommand);
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Failed to connect to MongoDB. Please verify connection settings.", ex);
+            }
 
             // Initialize log collection
             _logCollection = database.GetCollection<BsonDocument>(collectionName);

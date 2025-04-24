@@ -19,7 +19,7 @@ namespace DataTransferService.Controllers
         /// <returns>An HTTP 200 OK response if successful.</returns>
         [HttpPost]
         [Route("regist")]
-        public async Task<IActionResult> RegistAsync(List<Db2DbRequest> db2DbRequests)
+        public async Task<IActionResult> RegistAsync([FromBody] List<Db2DbRequest> db2DbRequests)
         {
             await transferService.RegistDb2DbTransferTaskAsync(db2DbRequests);
 

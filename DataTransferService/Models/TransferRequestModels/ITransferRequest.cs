@@ -1,4 +1,6 @@
-﻿namespace DataTransferService.Models.RequestModels
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace DataTransferService.Models.RequestModels
 {
     public interface ITransferRequest
     {
